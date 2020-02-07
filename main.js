@@ -27,7 +27,7 @@ const Player = (name, mark) => {
 
 
 function render() {
-  // 
+  //
 }
 
 
