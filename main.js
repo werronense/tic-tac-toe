@@ -1,8 +1,3 @@
-const Player = (name, mark) => {
-  return { name, mark };
-}
-
-
 const gameController = (() => {
   // gameboard module
   const gameboard = (() => {
@@ -19,8 +14,17 @@ const gameController = (() => {
       }
     }
 
+    const render = () => {
+      // render the move on the board
+    }
+
     return { move };
   })();
+
+  // code for players
+  const Player = (name, mark) => {
+    return { name, mark };
+  }
 
   const players = [];
 
@@ -29,6 +33,7 @@ const gameController = (() => {
     players.push(Player("computer", players[0].mark == "x" ? "o" : "x"));
   }
 
+  // code for turns
   const turn = (row, column) => {
     gameboard.move(row, column, players[0]);
     // update this so that computer chooses its own move after player
@@ -37,11 +42,6 @@ const gameController = (() => {
 
   return { setPlayers, turn };
 })();
-
-
-function render() {
-  //
-}
 
 
 // TEMP:
