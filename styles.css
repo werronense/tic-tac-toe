@@ -1,9 +1,11 @@
 .row {
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
 }
 
 .square {
   border: 1px dashed orange;
+  display: inline;
   height: 10vw;
   width: 10vw;
 }

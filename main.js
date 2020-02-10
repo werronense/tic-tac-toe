@@ -7,51 +7,59 @@ const gameController = (() => {
 
     const board = resetBoard();
 
-    const move = (row, column, player) => {
-      if (!board[row][column]) {
-        board[row][column] = player.mark;
-        console.log(board); // TEMP
-      }
+    const render = (node, mark) => {
+      node.textContent = mark;
     }
 
-    const render = () => {
-      // render the move on the board
+    const move = (row, column, player, node) => {
+      if (!board[row][column]) {
+        board[row][column] = player.mark;
+        render(node, player.mark)
+        // console.log(board); // TEMP
+      }
     }
 
     return { move };
   })();
 
   // code for players
-  const Player = (name, mark) => {
-    return { name, mark };
+  const Player = (name, mark, playerTurn) => {
+    return { name, mark, playerTurn };
   }
 
   const players = [];
 
   const setPlayers = (name, mark) => {
-    players.push(Player(name, mark));
-    players.push(Player("computer", players[0].mark == "x" ? "o" : "x"));
+    players.push(Player(name, mark, true));
+    players.push(Player("computer", players[0].mark == "X" ? "O" : "X"), false);
+  }
+
+  const computerMove = () => {
+    //
   }
 
   // code for turns
-  const turn = (row, column) => {
-    gameboard.move(row, column, players[0]);
+  const togglePlayer = (players) => {
+    players[0].playerTurn = !players[0].playerTurn
+    players[1].playerTurn = !players[1].playerTurn
+  }
+
+  const turn = (row, column, node) => {
+    gameboard.move(row, column, players[0], node);
+    togglePlayer(players);
     // update this so that computer chooses its own move after player
-    gameboard.move(0, 1, players[1]);
+    gameboard.move(0, 1, players[1], grid.children[0].children[1]);
+    togglePlayer(players);
   }
 
   return { setPlayers, turn };
 })();
 
 
-// TEMP:
-gameController.setPlayers("playerOne", "x");
-gameController.turn(0, 2);
-
 window.onload = () => {
-  const gameboard = document.getElementById('gameboard');
+  const grid = document.getElementById('grid');
 
-  // draw the gameboard
+  // draw the grid
   for (let i = 0; i < 3; i++) {
     let row = document.createElement('div');
     row.classList.add('row');
@@ -61,13 +69,20 @@ window.onload = () => {
       square.classList.add('square');
       square.dataset.row = i;
       square.dataset.col = j;
+
       square.addEventListener("click", (e) => {
         console.log({ row: e.target.dataset.row, col: e.target.dataset.col });
-        return { row: e.target.dataset.row, col: e.target.dataset.col };
+        gameController.turn(
+          e.target.dataset.row,
+          e.target.dataset.col,
+          e.target
+        );
       });
 
       row.append(square);
     }
-    gameboard.append(row);
+    grid.append(row);
   }
+
+  gameController.setPlayers("playerOne", "X");
 }
