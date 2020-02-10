@@ -47,3 +47,27 @@ function render() {
 // TEMP:
 gameController.setPlayers("playerOne", "x");
 gameController.turn(0, 2);
+
+window.onload = () => {
+  const gameboard = document.getElementById('gameboard');
+
+  // draw the gameboard
+  for (let i = 0; i < 3; i++) {
+    let row = document.createElement('div');
+    row.classList.add('row');
+
+    for (let j = 0; j < 3; j++) {
+      let square = document.createElement('div');
+      square.classList.add('square');
+      square.dataset.row = i;
+      square.dataset.col = j;
+      square.addEventListener("click", (e) => {
+        console.log({ row: e.target.dataset.row, col: e.target.dataset.col });
+        return { row: e.target.dataset.row, col: e.target.dataset.col };
+      });
+
+      row.append(square);
+    }
+    gameboard.append(row);
+  }
+}
