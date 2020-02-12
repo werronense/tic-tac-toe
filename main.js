@@ -7,19 +7,32 @@ const gameController = (() => {
 
     const board = resetBoard();
 
+    const checkAvailable = () => {
+      availableSquares = [];
+
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (board[i][j] == null) {
+            availableSquares.push({row: i, col: j});
+          }
+        }
+      }
+
+      return availableSquares;
+    }
+
     const render = (node, mark) => {
       node.textContent = mark;
     }
 
-    const move = (row, column, player, node) => {
+    const move = (row, column, player) => {
       if (!board[row][column]) {
         board[row][column] = player.mark;
-        render(node, player.mark)
-        // console.log(board); // TEMP
+        render(grid.children[row].children[column], player.mark);
       }
     }
 
-    return { move };
+    return { move, checkAvailable };
   })();
 
   // code for players
@@ -34,21 +47,31 @@ const gameController = (() => {
     players.push(Player("computer", players[0].mark == "X" ? "O" : "X"), false);
   }
 
-  const computerMove = () => {
-    //
+  // code for turns
+  const computerMove = (emptySquares) => {
+    index = Math.floor(Math.random() * emptySquares.length);
+    console.log(emptySquares.length, index);
+    row = emptySquares[index].row;
+    col = emptySquares[index].col;
+
+    gameboard.move(
+      row,
+      col,
+      players[1],
+      grid.children[row].children[col]
+    );
   }
 
-  // code for turns
   const togglePlayer = (players) => {
     players[0].playerTurn = !players[0].playerTurn
     players[1].playerTurn = !players[1].playerTurn
   }
 
-  const turn = (row, column, node) => {
-    gameboard.move(row, column, players[0], node);
+  const turn = (row, column) => {
+    gameboard.move(row, column, players[0]);
     togglePlayer(players);
-    // update this so that computer chooses its own move after player
-    gameboard.move(0, 1, players[1], grid.children[0].children[1]);
+
+    computerMove(gameboard.checkAvailable());
     togglePlayer(players);
   }
 
@@ -71,12 +94,8 @@ window.onload = () => {
       square.dataset.col = j;
 
       square.addEventListener("click", (e) => {
-        console.log({ row: e.target.dataset.row, col: e.target.dataset.col });
-        gameController.turn(
-          e.target.dataset.row,
-          e.target.dataset.col,
-          e.target
-        );
+        // console.log({ row: e.target.dataset.row, col: e.target.dataset.col });
+        gameController.turn(e.target.dataset.row, e.target.dataset.col);
       });
 
       row.append(square);
