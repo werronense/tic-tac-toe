@@ -29,7 +29,9 @@ const gameController = (() => {
       if (!board[row][column]) {
         board[row][column] = player.mark;
         render(grid.children[row].children[column], player.mark);
+        return true;
       }
+      return false;
     }
 
     return { move, checkAvailable };
@@ -45,6 +47,10 @@ const gameController = (() => {
   const setPlayers = (name, mark) => {
     players.push(Player(name, mark, true));
     players.push(Player("computer", players[0].mark == "X" ? "O" : "X"), false);
+  }
+
+  const checkPlayerTurn = () => {
+    return players[0].playerTurn;
   }
 
   // code for turns
@@ -68,14 +74,15 @@ const gameController = (() => {
   }
 
   const turn = (row, column) => {
-    gameboard.move(row, column, players[0]);
-    togglePlayer(players);
+    if (gameboard.move(row, column, players[0])) {
+      togglePlayer(players);
 
-    computerMove(gameboard.checkAvailable());
-    togglePlayer(players);
+      computerMove(gameboard.checkAvailable());
+      togglePlayer(players);
+    }
   }
 
-  return { setPlayers, turn };
+  return { setPlayers, checkPlayerTurn, turn };
 })();
 
 
@@ -94,8 +101,9 @@ window.onload = () => {
       square.dataset.col = j;
 
       square.addEventListener("click", (e) => {
-        // console.log({ row: e.target.dataset.row, col: e.target.dataset.col });
-        gameController.turn(e.target.dataset.row, e.target.dataset.col);
+        if (gameController.checkPlayerTurn()) {
+          gameController.turn(e.target.dataset.row, e.target.dataset.col);
+        }
       });
 
       row.append(square);
