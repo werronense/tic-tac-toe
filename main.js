@@ -25,16 +25,67 @@ const gameController = (() => {
       node.textContent = mark;
     }
 
+    const updateGameboard = (row, column, player) => {
+      board[row][column] = player.mark;
+    }
+
+    const checkRows = () => {
+      return (
+        board[0].reduce((a, b) => a == b && a) ||
+        board[1].reduce((a, b) => a == b && a) ||
+        board[2].reduce((a, b) => a == b && a)
+      )
+    }
+
+    const checkColumns = () => {
+      return (
+        [board[0][0], board[1][0], board[2][0]].reduce((a, b) => a == b && a) ||
+        [board[0][1], board[1][1], board[2][1]].reduce((a, b) => a == b && a) ||
+        [board[0][2], board[1][2], board[2][2]].reduce((a, b) => a == b && a)
+      )
+    }
+
+    const checkDiagonals = () => {
+      return (
+        [board[0][0], board[1][1], board[2][2]].reduce((a, b) => a == b && a) ||
+        [board[2][0], board[1][1], board[0][2]].reduce((a, b) => a == b && a)
+      )
+    }
+
+    const checkGameOver = () => {
+      if (checkAvailable().length < 7) {
+        return (
+          checkRows() ||
+          checkColumns() ||
+          checkDiagonals()
+        );
+      } else if (checkAvailable().length == 0) {
+        return "draw";
+      }
+    }
+
     const move = (row, column, player) => {
       if (!board[row][column]) {
-        board[row][column] = player.mark;
+        updateGameboard(row, column, player);
         render(grid.children[row].children[column], player.mark);
+        checkGameOver();
         return true;
       }
       return false;
     }
 
-    return { move, checkAvailable };
+    const computerMove = (emptySquares) => {
+      if (emptySquares[0]) {
+        index = Math.floor(Math.random() * emptySquares.length);
+        console.log(emptySquares.length, index);
+        row = emptySquares[index].row;
+        col = emptySquares[index].col;
+
+        move(row, col, players[1]);
+      }
+    }
+
+    return { checkAvailable, move, computerMove };
   })();
 
   // code for players
@@ -54,20 +105,6 @@ const gameController = (() => {
   }
 
   // code for turns
-  const computerMove = (emptySquares) => {
-    index = Math.floor(Math.random() * emptySquares.length);
-    console.log(emptySquares.length, index);
-    row = emptySquares[index].row;
-    col = emptySquares[index].col;
-
-    gameboard.move(
-      row,
-      col,
-      players[1],
-      grid.children[row].children[col]
-    );
-  }
-
   const togglePlayer = (players) => {
     players[0].playerTurn = !players[0].playerTurn
     players[1].playerTurn = !players[1].playerTurn
@@ -77,7 +114,7 @@ const gameController = (() => {
     if (gameboard.move(row, column, players[0])) {
       togglePlayer(players);
 
-      computerMove(gameboard.checkAvailable());
+      gameboard.computerMove(gameboard.checkAvailable());
       togglePlayer(players);
     }
   }
