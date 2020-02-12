@@ -29,26 +29,30 @@ const gameController = (() => {
       board[row][column] = player.mark;
     }
 
+    const checkThreeSquares = (array) => {
+      return array.reduce((a, b) => a == b && a);
+    }
+
     const checkRows = () => {
       return (
-        board[0].reduce((a, b) => a == b && a) ||
-        board[1].reduce((a, b) => a == b && a) ||
-        board[2].reduce((a, b) => a == b && a)
+        checkThreeSquares(board[0]) ||
+        checkThreeSquares(board[1]) ||
+        checkThreeSquares(board[2])
       )
     }
 
     const checkColumns = () => {
       return (
-        [board[0][0], board[1][0], board[2][0]].reduce((a, b) => a == b && a) ||
-        [board[0][1], board[1][1], board[2][1]].reduce((a, b) => a == b && a) ||
-        [board[0][2], board[1][2], board[2][2]].reduce((a, b) => a == b && a)
+        checkThreeSquares([board[0][0], board[1][0], board[2][0]]) ||
+        checkThreeSquares([board[0][1], board[1][1], board[2][1]]) ||
+        checkThreeSquares([board[0][2], board[1][2], board[2][2]])
       )
     }
 
     const checkDiagonals = () => {
       return (
-        [board[0][0], board[1][1], board[2][2]].reduce((a, b) => a == b && a) ||
-        [board[2][0], board[1][1], board[0][2]].reduce((a, b) => a == b && a)
+        checkThreeSquares([board[0][0], board[1][1], board[2][2]]) ||
+        checkThreeSquares([board[2][0], board[1][1], board[0][2]])
       )
     }
 
@@ -68,7 +72,9 @@ const gameController = (() => {
       if (!board[row][column]) {
         updateGameboard(row, column, player);
         render(grid.children[row].children[column], player.mark);
-        checkGameOver();
+        if (checkGameOver()) {
+          console.log(checkGameOver());
+        }
         return true;
       }
       return false;
