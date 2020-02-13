@@ -4,36 +4,39 @@
 }
 
 .square {
-  border: 1px dashed orange;
+  box-sizing: border-box;
   display: inline;
+  font-size: 4vw;
   height: 10vw;
+  padding: 3vw 0;
+  text-align: center;
   width: 10vw;
 }
 
 [data-col="0"] {
-  border-right: 1px solid black;
+  border-right: 2px solid black;
 }
 
 [data-col="1"] {
-  border-left: 1px solid black;
-  border-right: 1px solid black;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
 }
 
 [data-col="2"] {
-  border-left: 1px solid black;
+  border-left: 2px solid black;
 }
 
 [data-row="0"] {
-  border-bottom: 1px solid black;
+  border-bottom: 2px solid black;
 }
 
 [data-row="1"] {
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
 }
 
 [data-row="2"] {
-  border-top: 1px solid black;
+  border-top: 2px solid black;
 }
 
 .buttons {
