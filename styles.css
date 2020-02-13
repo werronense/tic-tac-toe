@@ -1,3 +1,12 @@
+body {
+  background: #000;
+}
+
+#container {
+  margin: 0 auto;
+  width: 30vw;
+}
+
 .row {
   display: flex;
   flex-direction: row;
@@ -5,6 +14,7 @@
 
 .square {
   box-sizing: border-box;
+  color: #00ff00;
   display: inline;
   font-size: 4vw;
   height: 10vw;
@@ -14,35 +24,46 @@
 }
 
 [data-col="0"] {
-  border-right: 2px solid black;
+  border-right: 2px solid #00ff00;
 }
 
 [data-col="1"] {
-  border-left: 2px solid black;
-  border-right: 2px solid black;
+  border-left: 2px solid #00ff00;
+  border-right: 2px solid #00ff00;
 }
 
 [data-col="2"] {
-  border-left: 2px solid black;
+  border-left: 2px solid #00ff00;
 }
 
 [data-row="0"] {
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid #00ff00;
 }
 
 [data-row="1"] {
-  border-top: 2px solid black;
-  border-bottom: 2px solid black;
+  border-top: 2px solid #00ff00;
+  border-bottom: 2px solid #00ff00;
 }
 
 [data-row="2"] {
-  border-top: 2px solid black;
+  border-top: 2px solid #00ff00;
 }
 
 .buttons {
   display: flex;
   justify-content: space-between;
+  margin-top: 1em;
   width: 30vw;
+}
+
+#x-button, #o-button {
+  background: #00ff00;
+  box-sizing: border-box;
+  font-size: 1.25em;
+  height: 3em;
+  padding: 1em 0;
+  text-align: center;
+  width: 10vw;
 }
 
 #x-button, #o-button, .playable {
