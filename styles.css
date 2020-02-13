@@ -35,3 +35,17 @@
 [data-row="2"] {
   border-top: 1px solid black;
 }
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 30vw;
+}
+
+#x-button, #o-button {
+  cursor: pointer;
+}
+
+.hidden {
+  visibility: hidden;
+}

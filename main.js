@@ -5,6 +5,10 @@ const gameController = (() => {
       return [[null, null, null], [null, null, null], [null, null, null]];
     }
 
+    const resetGame = () => {
+      console.log("reset game");
+    }
+
     const board = resetBoard();
 
     const checkAvailable = () => {
@@ -154,5 +158,14 @@ window.onload = () => {
     grid.append(row);
   }
 
-  gameController.setPlayers("playerOne", "X");
+  document.getElementById("x-button").addEventListener("click", (e) => {
+    e.target.parentNode.classList.add("hidden");
+    gameController.setPlayers("player", e.target.dataset.mark);
+  });
+
+  document.getElementById("o-button").addEventListener("click", (e) => {
+    e.target.parentNode.classList.add("hidden");
+    gameController.setPlayers("player", e.target.dataset.mark);
+  });
+
 }
