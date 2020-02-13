@@ -5,11 +5,11 @@ const gameController = (() => {
       return [[null, null, null], [null, null, null], [null, null, null]];
     }
 
-    const resetGame = () => {
-      console.log("reset game");
-    }
-
     const board = resetBoard();
+
+    const resetGame = () => {
+      board = resetBoard();
+    }
 
     const checkAvailable = () => {
       availableSquares = [];
@@ -33,6 +33,7 @@ const gameController = (() => {
       board[row][column] = player.mark;
     }
 
+    // check for winners or a draw
     const checkThreeSquares = (array) => {
       return array.reduce((a, b) => a == b && a);
     }
@@ -72,12 +73,15 @@ const gameController = (() => {
       }
     }
 
+    // deal with moves
     const move = (row, column, player) => {
       if (!board[row][column]) {
         updateGameboard(row, column, player);
         render(grid.children[row].children[column], player.mark);
         if (checkGameOver()) {
-          console.log(checkGameOver());
+          // prevents any further moves
+          player.playerTurn = false;
+          return false;
         }
         return true;
       }
@@ -87,7 +91,6 @@ const gameController = (() => {
     const computerMove = (emptySquares) => {
       if (emptySquares[0]) {
         index = Math.floor(Math.random() * emptySquares.length);
-        console.log(emptySquares.length, index);
         row = emptySquares[index].row;
         col = emptySquares[index].col;
 
@@ -97,6 +100,24 @@ const gameController = (() => {
 
     return { checkAvailable, move, computerMove };
   })();
+
+  // display functions
+  const makeAllPlayable = (parent) => {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        parent.children[i].children[j].classList.add("playable");
+      }
+    }
+  }
+
+  const clearBoard = (parent) => {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        parent.children[i].children[j].textContent = "";
+        parent.children[i].children[j].classList.remove("playable");
+      }
+    }
+  }
 
   // code for players
   const Player = (name, mark, playerTurn) => {
@@ -129,8 +150,17 @@ const gameController = (() => {
     }
   }
 
-  return { setPlayers, checkPlayerTurn, turn };
+  return { makeAllPlayable, clearBoard, setPlayers, checkPlayerTurn, turn };
 })();
+
+const handleClick = (e) => {
+  if (gameController.checkPlayerTurn()) {
+    gameController.turn(e.target.dataset.row, e.target.dataset.col);
+  }
+
+  e.target.classList.remove("playable");
+  e.target.removeEventListener("click", handleClick);
+}
 
 
 window.onload = () => {
@@ -147,11 +177,7 @@ window.onload = () => {
       square.dataset.row = i;
       square.dataset.col = j;
 
-      square.addEventListener("click", (e) => {
-        if (gameController.checkPlayerTurn()) {
-          gameController.turn(e.target.dataset.row, e.target.dataset.col);
-        }
-      });
+      square.addEventListener("click", handleClick);
 
       row.append(square);
     }
@@ -161,11 +187,13 @@ window.onload = () => {
   document.getElementById("x-button").addEventListener("click", (e) => {
     e.target.parentNode.classList.add("hidden");
     gameController.setPlayers("player", e.target.dataset.mark);
+    gameController.makeAllPlayable(grid);
   });
 
   document.getElementById("o-button").addEventListener("click", (e) => {
     e.target.parentNode.classList.add("hidden");
     gameController.setPlayers("player", e.target.dataset.mark);
+    gameController.makeAllPlayable(grid);
   });
 
 }

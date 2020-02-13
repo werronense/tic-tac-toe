@@ -42,7 +42,7 @@
   width: 30vw;
 }
 
-#x-button, #o-button {
+#x-button, #o-button, .playable {
   cursor: pointer;
 }
 
