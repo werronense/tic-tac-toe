@@ -63,11 +63,7 @@ const gameController = (() => {
 
     const checkGameOver = () => {
       if (checkAvailable().length < 7) {
-        return (
-          checkRows() ||
-          checkColumns() ||
-          checkDiagonals()
-        );
+        return (checkRows() || checkColumns() || checkDiagonals());
       } else if (checkAvailable().length == 0) {
         return "draw";
       }
@@ -102,19 +98,26 @@ const gameController = (() => {
   })();
 
   // display functions
-  const makeAllPlayable = (parent) => {
+  const makeAllPlayable = (boardElement) => {
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        parent.children[i].children[j].classList.add("playable");
+        boardElement.children[i].children[j].classList.add("playable");
       }
     }
   }
 
-  const clearBoard = (parent) => {
+  const clearBoard = (boardElement) => {
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        parent.children[i].children[j].textContent = "";
-        parent.children[i].children[j].classList.remove("playable");
+        boardElement.children[i].children[j].textContent = "";
+      }
+    }
+  }
+
+  const disableBoard = (boardElement) => {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        boardElement.children[i].children[j].classList.remove("playable");
       }
     }
   }
@@ -135,6 +138,17 @@ const gameController = (() => {
     return players[0].playerTurn;
   }
 
+  // start game
+  const startGame = (player, mark, boardElement) => {
+    setPlayers(player, mark);
+    makeAllPlayable(boardElement);
+  }
+
+  // end game
+  const endGame = (boardElement) => {
+    disableBoard(boardElement);
+  }
+
   // code for turns
   const togglePlayer = (players) => {
     players[0].playerTurn = !players[0].playerTurn
@@ -145,12 +159,15 @@ const gameController = (() => {
     if (gameboard.move(row, column, players[0])) {
       togglePlayer(players);
 
-      gameboard.computerMove(gameboard.checkAvailable());
+      window.setTimeout(
+        () => { gameboard.computerMove(gameboard.checkAvailable()) },
+        1000
+      );
       togglePlayer(players);
     }
   }
 
-  return { makeAllPlayable, clearBoard, setPlayers, checkPlayerTurn, turn };
+  return { startGame, endGame, checkPlayerTurn, turn };
 })();
 
 const handleClick = (e) => {
@@ -186,14 +203,12 @@ window.onload = () => {
 
   document.getElementById("x-button").addEventListener("click", (e) => {
     e.target.parentNode.classList.add("hidden");
-    gameController.setPlayers("player", e.target.dataset.mark);
-    gameController.makeAllPlayable(grid);
+    gameController.startGame("player", e.target.dataset.mark, grid);
   });
 
   document.getElementById("o-button").addEventListener("click", (e) => {
     e.target.parentNode.classList.add("hidden");
-    gameController.setPlayers("player", e.target.dataset.mark);
-    gameController.makeAllPlayable(grid);
+    gameController.startGame("player", e.target.dataset.mark, grid);
   });
 
 }
