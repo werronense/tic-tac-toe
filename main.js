@@ -31,7 +31,7 @@ const gameController = (() => {
 
     const disableSquare = (square) => {
       square.classList.remove("playable");
-      square.removeEventListener("click", handleClick);
+      square.removeEventListener("click", handleSquareClick);
     }
 
     const updateGameboard = (row, column, player) => {
@@ -110,9 +110,13 @@ const gameController = (() => {
     return { checkAvailable, move, computerMove };
   })();
 
-  // display variables and functions
+  // display variables, functions, and event handlers
   let grid;
   let reset;
+
+  const handleSquareClick = (e) => {
+    turn(e.target.dataset.row, e.target.dataset.col);
+  }
 
   const createBoardHtml = () => {
     grid = document.getElementById("grid");
@@ -127,7 +131,7 @@ const gameController = (() => {
         square.dataset.row = i;
         square.dataset.col = j;
 
-        square.addEventListener("click", handleClick);
+        square.addEventListener("click", handleSquareClick);
 
         row.append(square);
       }
@@ -137,7 +141,7 @@ const gameController = (() => {
 
   const handleButtonClick = (e) => {
     e.target.parentNode.classList.add("hidden");
-    gameController.startGame("player", e.target.dataset.mark, grid);
+    startGame("player", e.target.dataset.mark, grid);
   }
 
   const initializeChoiceButton = (id) => {
@@ -167,16 +171,12 @@ const gameController = (() => {
     }
   }
 
-  const handleClick = (e) => {
-    gameController.turn(e.target.dataset.row, e.target.dataset.col);
-  }
-
   const makeAllPlayable = (boardElement) => {
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         boardElement.children[i].children[j].classList.add("playable");
         boardElement.children[i].children[j]
-          .addEventListener("click", handleClick);
+          .addEventListener("click", handleSquareClick);
       }
     }
   }
@@ -194,7 +194,7 @@ const gameController = (() => {
       for (let j = 0; j < 3; j++) {
         boardElement.children[i].children[j].classList.remove("playable");
         boardElement.children[i].children[j]
-          .removeEventListener("click", handleClick);
+          .removeEventListener("click", handleSquareClick);
       }
     }
   }
@@ -252,12 +252,8 @@ const gameController = (() => {
     }
   }
 
-  return { initialize, startGame, endGame, turn }
+  return { initialize };
 })();
-
-const handleClick = (e) => {
-  gameController.turn(e.target.dataset.row, e.target.dataset.col);
-}
 
 
 window.onload = () => {
