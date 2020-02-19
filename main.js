@@ -5,7 +5,7 @@ const gameController = (() => {
       return [[null, null, null], [null, null, null], [null, null, null]];
     }
 
-    const board = resetBoard();
+    let board = resetBoard();
 
     const resetGame = () => {
       board = resetBoard();
@@ -107,12 +107,14 @@ const gameController = (() => {
       }
     }
 
-    return { checkAvailable, move, computerMove };
+    return { checkAvailable, move, computerMove, resetGame };
   })();
 
   // display variables, functions, and event handlers
   let grid;
   let reset;
+  let chooseX;
+  let chooseO;
 
   const handleSquareClick = (e) => {
     turn(e.target.dataset.row, e.target.dataset.col);
@@ -140,18 +142,27 @@ const gameController = (() => {
   }
 
   const handleButtonClick = (e) => {
-    e.target.parentNode.classList.add("hidden");
+    chooseX.classList.toggle("hidden");
+    chooseO.classList.toggle("hidden");
     startGame("player", e.target.dataset.mark, grid);
   }
 
   const initializeChoiceButton = (id) => {
-    document.getElementById(id).addEventListener("click", handleButtonClick);
+    if (id[0] == "x") {
+      chooseX = document.getElementById(id);
+      chooseX.addEventListener("click", handleButtonClick);
+    } else if (id[0] == "o") {
+      chooseO = document.getElementById(id);
+      chooseO.addEventListener("click", handleButtonClick);
+    }
   }
 
   const handleResetClick = (e) => {
-    reset.classList().toggle("hidden");
-    document.getElementById("x-button").classList().toggle("hidden");
-    document.getElementById("o-button").classList().toggle("hidden");
+    e.target.classList.toggle("hidden");
+    document.getElementById("x-button").classList.toggle("hidden");
+    document.getElementById("o-button").classList.toggle("hidden");
+    gameboard.resetGame();
+    clearBoard(grid);
   }
 
   const initializeResetButton = () => {
@@ -233,6 +244,7 @@ const gameController = (() => {
   const endGame = (boardElement) => {
     disableBoard(boardElement);
     currentPlayer = null;
+    reset.classList.toggle("hidden");
   }
 
   const turn = (row, column) => {
