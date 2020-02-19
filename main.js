@@ -67,10 +67,10 @@ const gameController = (() => {
     }
 
     const checkGameOver = () => {
-      if (checkAvailable().length < 7) {
+      if (checkAvailable().length == 0) {
+        return (checkRows() || checkColumns() || checkDiagonals()) || "draw";
+      } else if (checkAvailable.length < 7) {
         return (checkRows() || checkColumns() || checkDiagonals());
-      } else if (checkAvailable().length == 0) {
-        return "draw";
       }
     }
 
@@ -80,7 +80,15 @@ const gameController = (() => {
         updateGameboard(row, column, player);
         disableSquare(grid.children[row].children[column]);
         render(grid.children[row].children[column], player.mark);
-        if (checkGameOver()) {
+
+        let gameResult = checkGameOver();
+
+        if (gameResult) {
+          if (gameResult == "draw") {
+            console.log("draw");
+          } else {
+            console.log(`${player.name} wins!`);
+          }
           gameOver(grid);
           return false;
         }
@@ -225,7 +233,6 @@ const gameController = (() => {
   const endGame = (boardElement) => {
     disableBoard(boardElement);
     currentPlayer = null;
-    console.log("game over");
   }
 
   const turn = (row, column) => {
