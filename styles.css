@@ -7,6 +7,22 @@ body {
   width: 30vw;
 }
 
+#scoreboard {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 1em;
+  width: 30vw;
+}
+
+.scores {
+  box-sizing: border-box;
+  color: #00ff00;
+  margin-bottom: 1em;
+  text-align: left;
+  width: 10vw;
+}
+
 .row {
   display: flex;
   flex-direction: row;

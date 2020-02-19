@@ -85,9 +85,11 @@ const gameController = (() => {
 
         if (gameResult) {
           if (gameResult == "draw") {
-            console.log("draw");
+            updateScore(draws);
           } else {
-            console.log(`${player.name} wins!`);
+            updateScore(
+              (player.name == "player" ? playerScore : computerScore)
+            );
           }
           gameOver(grid);
           return false;
@@ -112,9 +114,28 @@ const gameController = (() => {
 
   // display variables, functions, and event handlers
   let grid;
+  let playerScore;
+  let draws;
+  let computerScore;
   let reset;
   let chooseX;
   let chooseO;
+
+  const initializeScoreboard = () => {
+    playerScore = document.getElementById("player-score");
+    playerScore.textContent = "Player: 0";
+
+    draws = document.getElementById("draws");
+    draws.textContent = "Draws: 0";
+
+    computerScore = document.getElementById("computer-score");
+    computerScore.textContent = "Computer: 0";
+  }
+
+  const updateScore = (score) => {
+    score.textContent = score.textContent.split(" ")[0] + " " + 
+      (parseInt(score.textContent.split(" ")[1]) + 1);
+  }
 
   const handleSquareClick = (e) => {
     turn(e.target.dataset.row, e.target.dataset.col);
@@ -172,6 +193,7 @@ const gameController = (() => {
 
   const initialize = () => {
     if (!grid && !reset) {
+      initializeScoreboard();
       createBoardHtml();
       initializeChoiceButton("x-button");
       initializeChoiceButton("o-button");
