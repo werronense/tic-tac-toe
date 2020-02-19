@@ -75,14 +75,13 @@ const gameController = (() => {
     }
 
     // deal with moves
-    const move = (row, column, player) => {
+    const move = (row, column, player, gameOver) => {
       if (!board[row][column]) {
         updateGameboard(row, column, player);
         disableSquare(grid.children[row].children[column]);
         render(grid.children[row].children[column], player.mark);
         if (checkGameOver()) {
-          // prevents any further moves
-          // player.playerTurn = false;
+          gameOver(grid);
           return false;
         }
         return true;
@@ -90,24 +89,75 @@ const gameController = (() => {
       return false;
     }
 
-    const computerMove = (emptySquares) => {
+    const computerMove = (emptySquares, gameOver) => {
       if (emptySquares[0]) {
         index = Math.floor(Math.random() * emptySquares.length);
         row = emptySquares[index].row;
         col = emptySquares[index].col;
 
-        move(row, col, players[1]);
+        move(row, col, players[1], gameOver);
       }
     }
 
     return { checkAvailable, move, computerMove };
   })();
 
-  // display functions
+  // display variables and functions
+  let grid;
+  let reset;
+
+  const initialize = () => {
+    if (!grid && !reset) {
+      grid = document.getElementById("grid");
+      reset = document.getElementById("reset-button");
+
+      for (let i = 0; i < 3; i++) {
+        let row = document.createElement('div');
+        row.classList.add('row');
+
+        for (let j = 0; j < 3; j++) {
+          let square = document.createElement('div');
+          square.classList.add('square');
+          square.dataset.row = i;
+          square.dataset.col = j;
+
+          square.addEventListener("click", handleClick);
+
+          row.append(square);
+        }
+        grid.append(row);
+      }
+
+      document.getElementById("x-button").addEventListener("click", (e) => {
+        e.target.parentNode.classList.add("hidden");
+        gameController.startGame("player", e.target.dataset.mark, grid);
+      });
+
+      document.getElementById("o-button").addEventListener("click", (e) => {
+        e.target.parentNode.classList.add("hidden");
+        gameController.startGame("player", e.target.dataset.mark, grid);
+      });
+
+      reset.addEventListener("click", () => {
+        reset.classList().toggle("hidden");
+        document.getElementById("x-button").classList().toggle("hidden");
+        document.getElementById("o-button").classList().toggle("hidden");
+      });
+
+      console.log("initialized");
+    }
+  }
+
+  const handleClick = (e) => {
+    gameController.turn(e.target.dataset.row, e.target.dataset.col);
+  }
+
   const makeAllPlayable = (boardElement) => {
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         boardElement.children[i].children[j].classList.add("playable");
+        boardElement.children[i].children[j]
+          .addEventListener("click", handleClick);
       }
     }
   }
@@ -124,6 +174,8 @@ const gameController = (() => {
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         boardElement.children[i].children[j].classList.remove("playable");
+        boardElement.children[i].children[j]
+          .removeEventListener("click", handleClick);
       }
     }
   }
@@ -134,6 +186,8 @@ const gameController = (() => {
   }
 
   const players = [];
+
+  let currentPlayer;
 
   const setPlayers = (name, mark) => {
     if (players.length > 0) {
@@ -149,89 +203,82 @@ const gameController = (() => {
     }
   }
 
-  // const checkPlayerTurn = () => {
-  //   return players[0].playerTurn;
-  // }
-
   // start game
   const startGame = (player, mark, boardElement) => {
     setPlayers(player, mark);
+    currentPlayer = players[0];
     makeAllPlayable(boardElement);
   }
 
   // end game
   const endGame = (boardElement) => {
     disableBoard(boardElement);
+    currentPlayer = null;
+    console.log("game over");
   }
 
-  // code for turns
-  // const togglePlayer = () => {
-  //   console.log(players[0].playerTurn);
-  //   players[0].playerTurn = (players[0].playerTurn ? false : true);
-  //   players[1].playerTurn = (players[1].playerTurn ? false : true);
-  //   console.log(players[0].playerTurn);
-  // }
-
   const turn = (row, column) => {
-    if (gameboard.move(row, column, players[0])) {
-      // togglePlayer(players);
-      // delay the computer move to make gameplay seem more natural
-      window.setTimeout(
-        () => { gameboard.computerMove(gameboard.checkAvailable()) },
-        750
-      );
-      // togglePlayer(players);
+    if (currentPlayer == players[0]) {
+      if (gameboard.move(row, column, players[0], endGame)) {
+        currentPlayer = players[1];
+        // delay the computer move to make gameplay seem more natural
+        window.setTimeout(
+          () => { gameboard.computerMove(gameboard.checkAvailable(), endGame) },
+          750
+        );
+        // temporary solution to timing issue
+        window.setTimeout(() => {
+          currentPlayer = players[0];
+        }, 750);
+      }
     }
   }
 
-  return { startGame, endGame, turn }
-  // return { startGame, endGame, checkPlayerTurn, turn };
+  return { initialize, startGame, endGame, turn }
 })();
 
 const handleClick = (e) => {
-  // if (gameController.checkPlayerTurn()) {
-  //   gameController.turn(e.target.dataset.row, e.target.dataset.col);
-  // }
   gameController.turn(e.target.dataset.row, e.target.dataset.col);
 }
 
 
 window.onload = () => {
-  const grid = document.getElementById('grid');
-  const reset = document.getElementById("reset-button");
+  // const grid = document.getElementById('grid');
+  // const reset = document.getElementById("reset-button");
 
   // draw the grid
-  for (let i = 0; i < 3; i++) {
-    let row = document.createElement('div');
-    row.classList.add('row');
+  // for (let i = 0; i < 3; i++) {
+  //   let row = document.createElement('div');
+  //   row.classList.add('row');
+  //
+  //   for (let j = 0; j < 3; j++) {
+  //     let square = document.createElement('div');
+  //     square.classList.add('square');
+  //     square.dataset.row = i;
+  //     square.dataset.col = j;
+  //
+  //     square.addEventListener("click", handleClick);
+  //
+  //     row.append(square);
+  //   }
+  //   grid.append(row);
+  // }
+  gameController.initialize();
 
-    for (let j = 0; j < 3; j++) {
-      let square = document.createElement('div');
-      square.classList.add('square');
-      square.dataset.row = i;
-      square.dataset.col = j;
+  // document.getElementById("x-button").addEventListener("click", (e) => {
+  //   e.target.parentNode.classList.add("hidden");
+  //   gameController.startGame("player", e.target.dataset.mark, grid);
+  // });
+  //
+  // document.getElementById("o-button").addEventListener("click", (e) => {
+  //   e.target.parentNode.classList.add("hidden");
+  //   gameController.startGame("player", e.target.dataset.mark, grid);
+  // });
 
-      square.addEventListener("click", handleClick);
-
-      row.append(square);
-    }
-    grid.append(row);
-  }
-
-  document.getElementById("x-button").addEventListener("click", (e) => {
-    e.target.parentNode.classList.add("hidden");
-    gameController.startGame("player", e.target.dataset.mark, grid);
-  });
-
-  document.getElementById("o-button").addEventListener("click", (e) => {
-    e.target.parentNode.classList.add("hidden");
-    gameController.startGame("player", e.target.dataset.mark, grid);
-  });
-
-  reset.addEventListener("click", () => {
-    reset.classList().toggle("hidden");
-    document.getElementById("x-button").classList().toggle("hidden");
-    document.getElementById("o-button").classList().toggle("hidden");
-  });
+  // reset.addEventListener("click", () => {
+  //   reset.classList().toggle("hidden");
+  //   document.getElementById("x-button").classList().toggle("hidden");
+  //   document.getElementById("o-button").classList().toggle("hidden");
+  // });
 
 }
