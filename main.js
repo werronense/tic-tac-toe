@@ -106,45 +106,56 @@ const gameController = (() => {
   let grid;
   let reset;
 
+  const createBoardHtml = () => {
+    grid = document.getElementById("grid");
+
+    for (let i = 0; i < 3; i++) {
+      let row = document.createElement('div');
+      row.classList.add('row');
+
+      for (let j = 0; j < 3; j++) {
+        let square = document.createElement('div');
+        square.classList.add('square');
+        square.dataset.row = i;
+        square.dataset.col = j;
+
+        square.addEventListener("click", handleClick);
+
+        row.append(square);
+      }
+      grid.append(row);
+    }
+  }
+
+  const handleButtonClick = (e) => {
+    e.target.parentNode.classList.add("hidden");
+    gameController.startGame("player", e.target.dataset.mark, grid);
+  }
+
+  const initializeChoiceButton = (id) => {
+    document.getElementById(id).addEventListener("click", handleButtonClick);
+  }
+
+  const handleResetClick = (e) => {
+    reset.classList().toggle("hidden");
+    document.getElementById("x-button").classList().toggle("hidden");
+    document.getElementById("o-button").classList().toggle("hidden");
+  }
+
+  const initializeResetButton = () => {
+    reset = document.getElementById("reset-button");
+    reset.addEventListener("click", handleResetClick);
+  }
+
   const initialize = () => {
     if (!grid && !reset) {
-      grid = document.getElementById("grid");
-      reset = document.getElementById("reset-button");
-
-      for (let i = 0; i < 3; i++) {
-        let row = document.createElement('div');
-        row.classList.add('row');
-
-        for (let j = 0; j < 3; j++) {
-          let square = document.createElement('div');
-          square.classList.add('square');
-          square.dataset.row = i;
-          square.dataset.col = j;
-
-          square.addEventListener("click", handleClick);
-
-          row.append(square);
-        }
-        grid.append(row);
-      }
-
-      document.getElementById("x-button").addEventListener("click", (e) => {
-        e.target.parentNode.classList.add("hidden");
-        gameController.startGame("player", e.target.dataset.mark, grid);
-      });
-
-      document.getElementById("o-button").addEventListener("click", (e) => {
-        e.target.parentNode.classList.add("hidden");
-        gameController.startGame("player", e.target.dataset.mark, grid);
-      });
-
-      reset.addEventListener("click", () => {
-        reset.classList().toggle("hidden");
-        document.getElementById("x-button").classList().toggle("hidden");
-        document.getElementById("o-button").classList().toggle("hidden");
-      });
-
+      createBoardHtml();
+      initializeChoiceButton("x-button");
+      initializeChoiceButton("o-button");
+      initializeResetButton();
       console.log("initialized");
+    } else {
+      console.log("already initialized");
     }
   }
 
@@ -243,42 +254,5 @@ const handleClick = (e) => {
 
 
 window.onload = () => {
-  // const grid = document.getElementById('grid');
-  // const reset = document.getElementById("reset-button");
-
-  // draw the grid
-  // for (let i = 0; i < 3; i++) {
-  //   let row = document.createElement('div');
-  //   row.classList.add('row');
-  //
-  //   for (let j = 0; j < 3; j++) {
-  //     let square = document.createElement('div');
-  //     square.classList.add('square');
-  //     square.dataset.row = i;
-  //     square.dataset.col = j;
-  //
-  //     square.addEventListener("click", handleClick);
-  //
-  //     row.append(square);
-  //   }
-  //   grid.append(row);
-  // }
   gameController.initialize();
-
-  // document.getElementById("x-button").addEventListener("click", (e) => {
-  //   e.target.parentNode.classList.add("hidden");
-  //   gameController.startGame("player", e.target.dataset.mark, grid);
-  // });
-  //
-  // document.getElementById("o-button").addEventListener("click", (e) => {
-  //   e.target.parentNode.classList.add("hidden");
-  //   gameController.startGame("player", e.target.dataset.mark, grid);
-  // });
-
-  // reset.addEventListener("click", () => {
-  //   reset.classList().toggle("hidden");
-  //   document.getElementById("x-button").classList().toggle("hidden");
-  //   document.getElementById("o-button").classList().toggle("hidden");
-  // });
-
 }
