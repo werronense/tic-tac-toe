@@ -104,15 +104,83 @@ const gameController = (() => {
       return false;
     }
 
-    const computerMove = (gameOver) => {
-      let emptySquares = checkAvailable(gameState)
-      if (emptySquares[0]) {
-        index = Math.floor(Math.random() * emptySquares.length);
-        row = emptySquares[index].row;
-        col = emptySquares[index].col;
+    // minimax algorithm to determine best computer move
+    const minimax = (board, depth, player) => {
+      let outcome = checkGameOver(board);
 
-        move(row, col, players.computer, gameOver);
+      if (outcome || depth == 0) {
+        if (outcome == players.human.mark) {
+          return { score: -10 - depth };
+        } else if (outcome == players.computer.mark) {
+          return { score: 10 + depth };
+        } else {
+          return { score: 0 + depth };
+        }
       }
+
+      const available = checkAvailable(board);
+      let moves = [];
+
+      available.forEach(square => {
+        const move = {};
+        const newBoard = board.map(row => row.slice(0));
+
+        move.coords = square;
+        newBoard[move.coords.row][move.coords.col] = player.mark;
+
+        if (player == players.computer) {
+          let result = minimax(newBoard, depth - 1, players.human);
+          move.score = result.score;
+        } else {
+          let result = minimax(newBoard, depth - 1, players.computer);
+          move.score = result.score;
+        }
+
+        newBoard[move.coords.row][move.coords.col] = null;
+        moves.push(move);
+      });
+
+      let bestMove;
+
+      if (player == players.computer) {
+        let bestScore = -1000;
+        moves.forEach(move => {
+          if (move.score > bestScore) {
+            bestScore = move.score;
+            bestMove = move;
+          }
+        });
+      } else {
+        let bestScore = 1000;
+        moves.forEach(move => {
+          if (move.score < bestScore) {
+            bestScore = move.score;
+            bestMove = move;
+          }
+        });
+      }
+
+      return bestMove;
+    }
+
+    const computerMove = (gameOver) => {
+      let bestSquare = minimax(gameState, 5, players.computer);
+      console.log(bestSquare.coords);
+      move(
+        bestSquare.coords.row,
+        bestSquare.coords.col,
+        players.computer,
+        gameOver
+      );
+
+      // let emptySquares = checkAvailable(gameState)
+      // if (emptySquares[0]) {
+      //   index = Math.floor(Math.random() * emptySquares.length);
+      //   row = emptySquares[index].row;
+      //   col = emptySquares[index].col;
+      //
+      //   move(row, col, players.computer, gameOver);
+      // }
     }
 
     return { move, computerMove, resetGame };
