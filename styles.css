@@ -15,7 +15,7 @@ body {
   width: 30vw;
 }
 
-.scores {
+.score {
   box-sizing: border-box;
   color: #3d4;
   margin-bottom: 1em;
@@ -89,4 +89,26 @@ body {
 
 .hidden {
   visibility: hidden;
+}
+
+@media (max-width: 750px) {
+  #container, #scoreboard, .buttons {
+    width: 90vw;
+  }
+
+  .score {
+    width: 30vw;
+  }
+
+  .square {
+    font-size: 20vw;
+    height: 30vw;
+    padding: auto 0;
+    width: 30vw;
+  }
+
+  #x-button, #o-button, #reset-button {
+    font-size: 1em;
+    width: 30vw;
+  }
 }
