@@ -5,13 +5,13 @@ const gameController = (() => {
       return [[null, null, null], [null, null, null], [null, null, null]];
     }
 
-    let board = resetBoard();
+    let gameState = resetBoard();
 
     const resetGame = () => {
-      board = resetBoard();
+      gameState = resetBoard();
     }
 
-    const checkAvailable = () => {
+    const checkAvailable = (board) => {
       availableSquares = [];
 
       for (let i = 0; i < 3; i++) {
@@ -35,7 +35,7 @@ const gameController = (() => {
     }
 
     const updateGameboard = (row, column, player) => {
-      board[row][column] = player.mark;
+      gameState[row][column] = player.mark;
     }
 
     // check for winners or a draw
@@ -43,7 +43,7 @@ const gameController = (() => {
       return array.reduce((a, b) => a == b && a);
     }
 
-    const checkRows = () => {
+    const checkRows = (board) => {
       return (
         checkThreeSquares(board[0]) ||
         checkThreeSquares(board[1]) ||
@@ -51,7 +51,7 @@ const gameController = (() => {
       )
     }
 
-    const checkColumns = () => {
+    const checkColumns = (board) => {
       return (
         checkThreeSquares([board[0][0], board[1][0], board[2][0]]) ||
         checkThreeSquares([board[0][1], board[1][1], board[2][1]]) ||
@@ -59,29 +59,34 @@ const gameController = (() => {
       )
     }
 
-    const checkDiagonals = () => {
+    const checkDiagonals = (board) => {
       return (
         checkThreeSquares([board[0][0], board[1][1], board[2][2]]) ||
         checkThreeSquares([board[2][0], board[1][1], board[0][2]])
       )
     }
 
-    const checkGameOver = () => {
-      if (checkAvailable().length == 0) {
-        return (checkRows() || checkColumns() || checkDiagonals()) || "draw";
-      } else if (checkAvailable.length < 7) {
-        return (checkRows() || checkColumns() || checkDiagonals());
+    const checkGameOver = (board) => {
+      if (checkAvailable(board).length == 0) {
+        return (
+          (checkRows(board) || checkColumns(board) || checkDiagonals(board)) ||
+          "draw"
+        );
+      } else if (checkAvailable(board).length < 7) {
+        return (
+          checkRows(board) || checkColumns(board) || checkDiagonals(board)
+        );
       }
     }
 
     // deal with moves
     const move = (row, column, player, gameOver) => {
-      if (!board[row][column]) {
+      if (!gameState[row][column]) {
         updateGameboard(row, column, player);
         disableSquare(grid.children[row].children[column]);
         render(grid.children[row].children[column], player.mark);
 
-        let gameResult = checkGameOver();
+        let gameResult = checkGameOver(gameState);
 
         if (gameResult) {
           if (gameResult == "draw") {
@@ -99,7 +104,8 @@ const gameController = (() => {
       return false;
     }
 
-    const computerMove = (emptySquares, gameOver) => {
+    const computerMove = (gameOver) => {
+      let emptySquares = checkAvailable(gameState)
       if (emptySquares[0]) {
         index = Math.floor(Math.random() * emptySquares.length);
         row = emptySquares[index].row;
@@ -109,7 +115,7 @@ const gameController = (() => {
       }
     }
 
-    return { checkAvailable, move, computerMove, resetGame };
+    return { move, computerMove, resetGame };
   })();
 
   // display variables, functions, and event handlers
@@ -133,7 +139,7 @@ const gameController = (() => {
   }
 
   const updateScore = (score) => {
-    score.textContent = score.textContent.split(" ")[0] + " " + 
+    score.textContent = score.textContent.split(" ")[0] + " " +
       (parseInt(score.textContent.split(" ")[1]) + 1);
   }
 
@@ -275,7 +281,7 @@ const gameController = (() => {
         currentPlayer = players[1];
         // delay the computer move to make gameplay seem more natural
         window.setTimeout(
-          () => { gameboard.computerMove(gameboard.checkAvailable(), endGame) },
+          () => { gameboard.computerMove(endGame) },
           750
         );
         // temporary solution to timing issue
