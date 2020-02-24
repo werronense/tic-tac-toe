@@ -111,7 +111,7 @@ const gameController = (() => {
         row = emptySquares[index].row;
         col = emptySquares[index].col;
 
-        move(row, col, players[1], gameOver);
+        move(row, col, players.computer, gameOver);
       }
     }
 
@@ -239,32 +239,29 @@ const gameController = (() => {
   }
 
   // code for players
-  const Player = (name, mark, playerTurn) => {
-    return { name, mark, playerTurn };
+  const Player = (name, mark) => {
+    return { name, mark };
   }
 
-  const players = [];
+  const players = {};
 
   let currentPlayer;
 
   const setPlayers = (name, mark) => {
-    if (players.length > 0) {
-      players[0].mark = mark;
-      players[1].mark = (mark == "X" ? "O" : "X");
+    if (Object.keys(players).length > 0) {
+      players.human.mark = mark;
+      players.computer.mark = (mark == "X" ? "O" : "X");
     } else {
-      players.push(
-        Player(name, mark, true)
-      );
-      players.push(
-        Player("computer", (players[0].mark == "X" ? "O" : "X"), false)
-      );
+      players.human = Player(name, mark);
+      players.computer =
+        Player("computer", (players.human.mark == "X" ? "O" : "X"));
     }
   }
 
   // start game
   const startGame = (player, mark, boardElement) => {
     setPlayers(player, mark);
-    currentPlayer = players[0];
+    currentPlayer = players.human;
     makeAllPlayable(boardElement);
   }
 
@@ -276,9 +273,9 @@ const gameController = (() => {
   }
 
   const turn = (row, column) => {
-    if (currentPlayer == players[0]) {
-      if (gameboard.move(row, column, players[0], endGame)) {
-        currentPlayer = players[1];
+    if (currentPlayer == players.human) {
+      if (gameboard.move(row, column, players.human, endGame)) {
+        currentPlayer = players.computer;
         // delay the computer move to make gameplay seem more natural
         window.setTimeout(
           () => { gameboard.computerMove(endGame) },
@@ -286,7 +283,7 @@ const gameController = (() => {
         );
         // temporary solution to timing issue
         window.setTimeout(() => {
-          currentPlayer = players[0];
+          currentPlayer = players.human;
         }, 750);
       }
     }
