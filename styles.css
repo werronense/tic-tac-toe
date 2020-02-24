@@ -1,5 +1,5 @@
 body {
-  background: #000;
+  background: #222;
 }
 
 #container {
@@ -17,7 +17,7 @@ body {
 
 .scores {
   box-sizing: border-box;
-  color: #00ff00;
+  color: #3d4;
   margin-bottom: 1em;
   text-align: left;
   width: 10vw;
@@ -30,7 +30,7 @@ body {
 
 .square {
   box-sizing: border-box;
-  color: #00ff00;
+  color: #3d4;
   display: inline;
   font-size: 4vw;
   height: 10vw;
@@ -40,29 +40,29 @@ body {
 }
 
 [data-col="0"] {
-  border-right: 2px solid #00ff00;
+  border-right: 2px solid #3d4;
 }
 
 [data-col="1"] {
-  border-left: 2px solid #00ff00;
-  border-right: 2px solid #00ff00;
+  border-left: 2px solid #3d4;
+  border-right: 2px solid #3d4;
 }
 
 [data-col="2"] {
-  border-left: 2px solid #00ff00;
+  border-left: 2px solid #3d4;
 }
 
 [data-row="0"] {
-  border-bottom: 2px solid #00ff00;
+  border-bottom: 2px solid #3d4;
 }
 
 [data-row="1"] {
-  border-top: 2px solid #00ff00;
-  border-bottom: 2px solid #00ff00;
+  border-top: 2px solid #3d4;
+  border-bottom: 2px solid #3d4;
 }
 
 [data-row="2"] {
-  border-top: 2px solid #00ff00;
+  border-top: 2px solid #3d4;
 }
 
 .buttons {
@@ -73,8 +73,9 @@ body {
 }
 
 #x-button, #o-button, #reset-button {
-  background: #00ff00;
+  background: #3d4;
   box-sizing: border-box;
+  color: #222;
   font-size: 1.25em;
   height: 3em;
   padding: 1em 0;
