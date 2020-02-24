@@ -159,28 +159,17 @@ const gameController = (() => {
           }
         });
       }
-
       return bestMove;
     }
 
     const computerMove = (gameOver) => {
-      let bestSquare = minimax(gameState, 5, players.computer);
-      console.log(bestSquare.coords);
+      let bestSquare = minimax(gameState, 6, players.computer);
       move(
         bestSquare.coords.row,
         bestSquare.coords.col,
         players.computer,
         gameOver
       );
-
-      // let emptySquares = checkAvailable(gameState)
-      // if (emptySquares[0]) {
-      //   index = Math.floor(Math.random() * emptySquares.length);
-      //   row = emptySquares[index].row;
-      //   col = emptySquares[index].col;
-      //
-      //   move(row, col, players.computer, gameOver);
-      // }
     }
 
     return { move, computerMove, resetGame };
